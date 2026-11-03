@@ -417,7 +417,6 @@ export function createWidgetFactory(deps: WidgetDeps) {
         if (isDialogActive(tui)) return [];
 
         const dim = (text: string) => theme.fg("dim", text);
-        const border = dim("─".repeat(width));
 
         if (deps.getMinimal()) {
           const pieces = gatherInfoPieces(deps.getCtxRef(), deps.pi, theme);
@@ -441,7 +440,6 @@ export function createWidgetFactory(deps: WidgetDeps) {
         const infoLines = buildInfoLines(width, infoWidth, deps.getCtxRef(), deps.pi, theme);
 
         const lines: string[] = [];
-        lines.push(border);
 
         if (!showEmote) {
           // Avatar and separator hidden — info panel takes the full width.
