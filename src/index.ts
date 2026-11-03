@@ -33,9 +33,9 @@ function hasImageFrames(setDir: string): boolean {
   return false;
 }
 
-/** Merge a patch into the user global config layer (~/.pi/agent/extensions/pi-emote/config.json). */
+/** Merge a patch into the user global config layer (~/.pi/agent/extensions/pi-bondhu/config.json). */
 function persistUserConfig(patch: Record<string, unknown>): boolean {
-  const userConfigPath = join(homedir(), ".pi", "agent", "extensions", "pi-emote", "config.json");
+  const userConfigPath = join(homedir(), ".pi", "agent", "extensions", "pi-bondhu", "config.json");
   try {
     let userConfig: any = {};
     try { userConfig = JSON.parse(readFileSync(userConfigPath, "utf-8")); } catch { /* no user config yet */ }
@@ -178,7 +178,7 @@ export default function (pi: ExtensionAPI) {
       if (!sets.some((s) => s.name === setName)) return;
 
       // Persist as the catch-all default in the user config layer.
-      const userConfigPath = join(homedir(), ".pi", "agent", "extensions", "pi-emote", "config.json");
+      const userConfigPath = join(homedir(), ".pi", "agent", "extensions", "pi-bondhu", "config.json");
       try {
         let userConfig: any = {};
         try { userConfig = JSON.parse(readFileSync(userConfigPath, "utf-8")); } catch { /* no user config yet */ }
@@ -230,14 +230,14 @@ export default function (pi: ExtensionAPI) {
     if (lastResolved.warning) {
       ctx.ui.notify(lastResolved.warning, lastResolved.warningLevel);
     } else if (renderer instanceof AsciiRenderer) {
-      ctx.ui.notify("[pi-emote] No image protocol detected \u2014 using ASCII emotes.", "warning");
+      ctx.ui.notify("[pi-bondhu] No image protocol detected \u2014 using ASCII emotes.", "warning");
     }
 
     ctxRef = ctx;
 
     if (!config.enabled) return;
 
-    // pi-emote owns the status strip — hide pi's built-in footer in every mode.
+    // pi-bondhu owns the status strip — hide pi's built-in footer in every mode.
     ctx.ui.setFooter(() => ({
       render: () => [],
       invalidate() {},
@@ -252,7 +252,7 @@ export default function (pi: ExtensionAPI) {
     loadEmoteSet(setName);
 
     // Create widget
-    ctx.ui.setWidget("emote", createWidgetFactory({
+    ctx.ui.setWidget("bondhu", createWidgetFactory({
       animator,
       config,
       pi,
@@ -270,7 +270,7 @@ export default function (pi: ExtensionAPI) {
     animator.clearAllTimers();
     animator.disposeRenderer();
     if (widgetActive && ctx.hasUI) {
-      ctx.ui.setWidget("emote", undefined);
+      ctx.ui.setWidget("bondhu", undefined);
       widgetActive = false;
     }
     animator.setTui(null);

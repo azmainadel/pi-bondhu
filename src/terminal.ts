@@ -96,7 +96,7 @@ function resolveMultiplexer(
     warningLevel: "info",
     warning: isUserConfigured
       ? null
-      : `[pi-emote] ${label} detected. Image passthrough not supported... yet! Defaulting to ASCII.`,
+      : `[pi-bondhu] ${label} detected. Image passthrough not supported... yet! Defaulting to ASCII.`,
   };
 }
 
@@ -113,7 +113,7 @@ function resolveTmux(
       ...base,
       protocol: "ascii",
       warning:
-        "[pi-emote] tmux detected. Add 'set -g allow-passthrough on' and 'set -ga update-environment TERM_PROGRAM' to tmux.conf to enable image avatar. Defaulting to ASCII.",
+        "[pi-bondhu] tmux detected. Add 'set -g allow-passthrough on' and 'set -ga update-environment TERM_PROGRAM' to tmux.conf to enable image avatar. Defaulting to ASCII.",
     };
   }
 
@@ -126,7 +126,7 @@ function resolveTmux(
       ...base,
       protocol: "ascii",
       warning:
-        "[pi-emote] tmux passthrough enabled but could not detect outer terminal. Defaulting to ASCII.",
+        "[pi-bondhu] tmux passthrough enabled but could not detect outer terminal. Defaulting to ASCII.",
     };
   }
 
@@ -140,7 +140,7 @@ function resolveTmux(
     ...base,
     protocol: "ascii",
     warning:
-      `[pi-emote] tmux + ${outer} detected. No pane-safe image renderer available. Defaulting to ASCII. Set render to \"iterm2\" to opt in (experimental).`,
+      `[pi-bondhu] tmux + ${outer} detected. No pane-safe image renderer available. Defaulting to ASCII. Set render to \"iterm2\" to opt in (experimental).`,
   };
 }
 

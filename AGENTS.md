@@ -1,18 +1,18 @@
-# pi-emote
+# pi-bondhu
 
 Animated pixel-art emote widget for pi TUI. Displays a reactive avatar that changes expression based on agent activity (thinking, talking, reading, writing, tool use, etc.).
 
 ## Configuration
 
-pi-emote uses layered configuration with deep merge. Higher-priority layers override lower ones field-by-field.
+pi-bondhu uses layered configuration with deep merge. Higher-priority layers override lower ones field-by-field.
 
 ### Priority (lowest → highest)
 
 | Layer | Path | Purpose |
 |-------|------|---------|
 | Extension defaults | `<ext-dir>/config.json` | Shipped defaults |
-| User global | `~/.pi/agent/extensions/pi-emote/config.json` | Personal preferences |
-| Project local | `.pi/extensions/pi-emote/config.json` | Project-specific overrides |
+| User global | `~/.pi/agent/extensions/pi-bondhu/config.json` | Personal preferences |
+| Project local | `.pi/extensions/pi-bondhu/config.json` | Project-specific overrides |
 
 ### Config Fields
 
@@ -201,10 +201,10 @@ The `terminals` array uses **merge-by-key** semantics: entries are merged by `ma
 
 ### Emote Set Lookup
 
-When resolving an emote set name, pi-emote searches these locations in order:
+When resolving an emote set name, pi-bondhu searches these locations in order:
 
-1. **Project:** `.pi/extensions/pi-emote/emotes/<set-name>/`
-2. **User:** `~/.pi/agent/extensions/pi-emote/emotes/<set-name>/`
+1. **Project:** `.pi/extensions/pi-bondhu/emotes/<set-name>/`
+2. **User:** `~/.pi/agent/extensions/pi-bondhu/emotes/<set-name>/`
 3. **Extension:** `<ext-dir>/emotes/<set-name>/`
 4. **Fallback:** `<ext-dir>/emotes/default/`
 
@@ -269,7 +269,7 @@ Optional file inside each emote set to configure frame behavior:
 
 1. Create the directory in the appropriate location:
    ```bash
-   mkdir -p ~/.pi/agent/extensions/pi-emote/emotes/my-avatar/{idle,think,talk,read,write,tool,hi,success,failure,compact}
+   mkdir -p ~/.pi/agent/extensions/pi-bondhu/emotes/my-avatar/{idle,think,talk,read,write,tool,hi,success,failure,compact}
    ```
 
 2. Add PNG frames to each state directory. Not all states are required — missing states will have no animation for that action.
@@ -290,7 +290,7 @@ Optional file inside each emote set to configure frame behavior:
 
 To use a single custom emote for all models in a project:
 
-`.pi/extensions/pi-emote/config.json`:
+`.pi/extensions/pi-bondhu/config.json`:
 ```json
 {
   "emotes": [
@@ -299,4 +299,4 @@ To use a single custom emote for all models in a project:
 }
 ```
 
-Place the frames in `.pi/extensions/pi-emote/emotes/project-mascot/`.
+Place the frames in `.pi/extensions/pi-bondhu/emotes/project-mascot/`.

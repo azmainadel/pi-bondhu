@@ -93,10 +93,10 @@ export function loadLayeredConfig(extDir: string, cwd: string): ConfigResult {
 
   // Layer 2: User global config
   const homeDir = process.env.HOME ?? process.env.USERPROFILE ?? "";
-  const userConfig = loadJsonFile(join(homeDir, ".pi", "agent", "extensions", "pi-emote", "config.json"));
+  const userConfig = loadJsonFile(join(homeDir, ".pi", "agent", "extensions", "pi-bondhu", "config.json"));
 
   // Layer 3: Project config (highest priority)
-  const projectConfig = loadJsonFile(join(cwd, ".pi", "extensions", "pi-emote", "config.json"));
+  const projectConfig = loadJsonFile(join(cwd, ".pi", "extensions", "pi-bondhu", "config.json"));
 
   // Deep merge in priority order
   let merged = DEFAULTS;

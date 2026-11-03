@@ -1,11 +1,11 @@
-# pi-emote
+# pi-bondhu
 
 Forked from [cgxeiji/pi-emote](https://github.com/cgxeiji/pi-emote).
 
 Install with:
 
 ```bash
-pi install git:github.com/azmainadel/pi-emote
+pi install git:github.com/azmainadel/pi-bondhu
 ```
 
 ## Commands

@@ -64,7 +64,7 @@ function parseSimpleYaml(text: string): AsciiFrameMap {
   function flushObjArray() {
     if (pendingArrKey !== null && pendingArr !== null) {
       if (pendingArr.length === 0) {
-        log(`[pi-emote] Warning: empty frame for '${pendingArrKey}' under '${topKey}'`);
+        log(`[pi-bondhu] Warning: empty frame for '${pendingArrKey}' under '${topKey}'`);
       } else {
         if (nestedObj === null) nestedObj = {};
         nestedObj[pendingArrKey] = pendingArr;
@@ -133,7 +133,7 @@ function parseSimpleYaml(text: string): AsciiFrameMap {
           nestedArrs = [];
           // Promote any accumulated flat items to single-element nested arrays
           if (flatArr !== null) {
-            log(`[pi-emote] Warning: mixing single-line and multi-line frames under '${topKey}'`);
+            log(`[pi-bondhu] Warning: mixing single-line and multi-line frames under '${topKey}'`);
             for (const item of flatArr) {
               nestedArrs.push([item]);
             }
@@ -149,7 +149,7 @@ function parseSimpleYaml(text: string): AsciiFrameMap {
         curNestedArr!.push(unquote(rawContent));
       } else if (nestedArrs !== null) {
         // Flat item after nested items — wrap in single-element sub-array
-        log(`[pi-emote] Warning: mixing single-line and multi-line frames under '${topKey}'`);
+        log(`[pi-bondhu] Warning: mixing single-line and multi-line frames under '${topKey}'`);
         if (curNestedArr !== null && curNestedArr.length > 0) {
           nestedArrs.push(curNestedArr);
         }
@@ -164,7 +164,7 @@ function parseSimpleYaml(text: string): AsciiFrameMap {
         // First array item under this top-level key = flat array
         flatArr = [unquote(rawContent)];
       } else {
-        log(`[pi-emote] Warning: unexpected array item under '${topKey}' (cannot mix named keys and arrays)`);
+        log(`[pi-bondhu] Warning: unexpected array item under '${topKey}' (cannot mix named keys and arrays)`);
       }
       continue;
     }

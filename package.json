@@ -1,5 +1,5 @@
 {
-  "name": "pi-emote",
+  "name": "pi-bondhu",
   "version": "0.3.0",
   "description": "Animated pixel-art emote widget for pi TUI",
   "author": "Adel",
@@ -9,9 +9,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/azmainadel/pi-emote.git"
+    "url": "git+https://github.com/azmainadel/pi-bondhu.git"
   },
-  "homepage": "https://github.com/azmainadel/pi-emote#readme",
+  "homepage": "https://github.com/azmainadel/pi-bondhu#readme",
   "keywords": [
     "pi-package",
     "pi-extension",

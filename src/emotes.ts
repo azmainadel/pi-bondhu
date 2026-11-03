@@ -25,10 +25,10 @@ export function resolveEmoteSet(modelId: string, thinkingLevel: string, emotes: 
   }
 
   if (modelMatchCount > 1) {
-    console.error(`[pi-emote] Warning: multiple model patterns matched model "${modelId}", using last match.`);
+    console.error(`[pi-bondhu] Warning: multiple model patterns matched model "${modelId}", using last match.`);
   }
   if (thinkingMatchCount > 1) {
-    console.error(`[pi-emote] Warning: multiple thinking-level patterns matched "${thinkingLevel}", using last match.`);
+    console.error(`[pi-bondhu] Warning: multiple thinking-level patterns matched "${thinkingLevel}", using last match.`);
   }
 
   return matched ?? "default";
@@ -50,8 +50,8 @@ export interface EmoteSetInfo {
 export function listEmoteSets(extDir: string, cwd: string): EmoteSetInfo[] {
   const homeDir = process.env.HOME ?? process.env.USERPROFILE ?? "";
   const roots: Array<[string, EmoteSetInfo["source"]]> = [
-    [join(cwd, ".pi", "extensions", "pi-emote", "emotes"), "project"],
-    [join(homeDir, ".pi", "agent", "extensions", "pi-emote", "emotes"), "user"],
+    [join(cwd, ".pi", "extensions", "pi-bondhu", "emotes"), "project"],
+    [join(homeDir, ".pi", "agent", "extensions", "pi-bondhu", "emotes"), "user"],
     [join(extDir, "emotes"), "extension"],
   ];
 
@@ -76,10 +76,10 @@ export function findEmoteSetDir(setName: string, extDir: string, cwd: string): s
   const homeDir = process.env.HOME ?? process.env.USERPROFILE ?? "";
 
   // Priority: project → user → extension → fallback to default
-  const projectDir = join(cwd, ".pi", "extensions", "pi-emote", "emotes", setName);
+  const projectDir = join(cwd, ".pi", "extensions", "pi-bondhu", "emotes", setName);
   if (existsSync(projectDir)) return projectDir;
 
-  const userDir = join(homeDir, ".pi", "agent", "extensions", "pi-emote", "emotes", setName);
+  const userDir = join(homeDir, ".pi", "agent", "extensions", "pi-bondhu", "emotes", setName);
   if (existsSync(userDir)) return userDir;
 
   const extSetDir = join(extDir, "emotes", setName);
