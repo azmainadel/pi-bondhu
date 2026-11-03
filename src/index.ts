@@ -238,6 +238,13 @@ export default function (pi: ExtensionAPI) {
 
     if (!config.enabled) return;
 
+    // pi-emote owns the status strip — hide pi's built-in footer in every mode.
+    ctx.ui.setFooter(() => ({
+      render: () => [],
+      invalidate() {},
+      dispose() {},
+    }));
+
     // Resolve emote set for current model and thinking level
     const modelId = ctx.model?.id ?? "";
     const thinkingLevel = pi.getThinkingLevel();
