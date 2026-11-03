@@ -422,7 +422,7 @@ export function createWidgetFactory(deps: WidgetDeps) {
           const pieces = gatherInfoPieces(deps.getCtxRef(), deps.pi, theme);
           if (!pieces) return [];
           log(`render: minimal one-line`);
-          return [border, buildMinimalLine(width, pieces, theme), ""];
+          return [border, "", buildMinimalLine(width, pieces, theme), ""];
         }
 
         const frame = animator.getRenderedFrame();
