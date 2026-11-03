@@ -287,7 +287,7 @@ export default function (pi: ExtensionAPI) {
 
   // --- /minimal: one-line status (model | tokens | time·turns | progress) ---
 
-  pi.registerCommand("minimal", {
+  pi.registerCommand("emote:minimal", {
     description: "Toggle one-line minimal status (hides avatar and info panel)",
     handler: async (_args, ctx) => {
       if (!ctx.hasUI) return;

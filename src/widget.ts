@@ -415,11 +415,14 @@ export function createWidgetFactory(deps: WidgetDeps) {
         if (width < config.hideBelow) return [];
         if (isDialogActive(tui)) return [];
 
+        const dim = (text: string) => theme.fg("dim", text);
+        const border = dim("─".repeat(width));
+
         if (deps.getMinimal()) {
           const pieces = gatherInfoPieces(deps.getCtxRef(), deps.pi, theme);
           if (!pieces) return [];
           log(`render: minimal one-line`);
-          return [buildMinimalLine(width, pieces, theme)];
+          return [border, buildMinimalLine(width, pieces, theme), ""];
         }
 
         const frame = animator.getRenderedFrame();
@@ -430,9 +433,7 @@ export function createWidgetFactory(deps: WidgetDeps) {
 
         log(`render: kind=${frame.kind}, set="${deps.getCurrentEmoteSet()}"`);
 
-        const dim = (text: string) => theme.fg("dim", text);
         const separatorColor = dim;
-        const border = dim("─".repeat(width));
         const showEmote = deps.getEmoteVisible();
         const avatarWidth = frame.kind === "text" ? TEXT_CANVAS_COLS : config.size;
         const infoWidth = showEmote ? width - avatarWidth - 5 : width - 2;
