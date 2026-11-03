@@ -262,7 +262,7 @@ export default function (pi: ExtensionAPI) {
       getEmoteVisible: () => emoteVisible,
       getMinimal: () => minimalMode,
       tuiRef,
-    }), { placement: "aboveEditor" });
+    }), { placement: "belowEditor" });
 
     widgetActive = true;
     setTimeout(() => animator.transitionTo("hi"), 500);

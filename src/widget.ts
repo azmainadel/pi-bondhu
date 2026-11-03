@@ -181,7 +181,8 @@ function buildMinimalLine(width: number, pieces: InfoPieces, theme: any): string
   const dim = (text: string) => theme.fg("dim", text);
   const right = pieces.progressLine;
   const rightW = visibleWidth(right);
-  const budget = Math.max(0, width - rightW - 2);
+  // Leading space aligns the line with the full panel's info rows.
+  const budget = Math.max(0, width - 1 - rightW - 2);
 
   // Keep leading segments while they fit next to the progress bar.
   const parts = [`🧠 ${pieces.modelLine}`, pieces.statsLine, pieces.timeTurnsLine];
@@ -200,8 +201,8 @@ function buildMinimalLine(width: number, pieces: InfoPieces, theme: any): string
     // Nothing fit — show at least a truncated model line.
     leftPlain = truncateToWidth(parts[0], budget, "…");
   }
-  const pad = Math.max(1, width - visibleWidth(leftPlain) - rightW);
-  return `${dim(leftPlain)}${" ".repeat(pad)}${right}`;
+  const pad = Math.max(1, width - 1 - visibleWidth(leftPlain) - rightW);
+  return ` ${dim(leftPlain)}${" ".repeat(pad)}${right}`;
 }
 
 function buildInfoLines(_width: number, infoWidth: number, ctxRef: any, pi: any, theme: any): string[] {
@@ -422,7 +423,7 @@ export function createWidgetFactory(deps: WidgetDeps) {
           const pieces = gatherInfoPieces(deps.getCtxRef(), deps.pi, theme);
           if (!pieces) return [];
           log(`render: minimal one-line`);
-          return [border, "", buildMinimalLine(width, pieces, theme), ""];
+          return [buildMinimalLine(width, pieces, theme), ""];
         }
 
         const frame = animator.getRenderedFrame();
