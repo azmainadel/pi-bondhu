@@ -384,7 +384,6 @@ export interface WidgetDeps {
   pi: any;
   getCtxRef: () => any;
   getCurrentEmoteSet: () => string;
-  getEmoteVisible: () => boolean;
   getMinimal: () => boolean;
   tuiRef: { current: any };
 }
@@ -434,19 +433,11 @@ export function createWidgetFactory(deps: WidgetDeps) {
         log(`render: kind=${frame.kind}, set="${deps.getCurrentEmoteSet()}"`);
 
         const separatorColor = dim;
-        const showEmote = deps.getEmoteVisible();
         const avatarWidth = frame.kind === "text" ? TEXT_CANVAS_COLS : config.size;
-        const infoWidth = showEmote ? width - avatarWidth - 5 : width - 2;
+        const infoWidth = width - avatarWidth - 5;
         const infoLines = buildInfoLines(width, infoWidth, deps.getCtxRef(), deps.pi, theme);
 
         const lines: string[] = [];
-
-        if (!showEmote) {
-          // Avatar and separator hidden — info panel takes the full width.
-          for (const line of infoLines) lines.push(` ${line}`);
-          lines.push("");
-          return lines;
-        }
 
         if (frame.kind === "image") {
           if (frame.cursorAdvances) {

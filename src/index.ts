@@ -98,7 +98,6 @@ export default function (pi: ExtensionAPI) {
   let currentEmoteSet = "default";
   let ctxRef: any = null;
   let widgetActive = false;
-  let emoteVisible = true;
   let minimalMode = config.minimal;
   const tuiRef = { current: null as any };
   let lastResolved = resolveRenderer(config.terminals, userConfiguredTerminals);
@@ -160,7 +159,7 @@ export default function (pi: ExtensionAPI) {
 
   // --- /set-emote: pick an emote set interactively ---
 
-  pi.registerCommand("emote:switch", {
+  pi.registerCommand("bondhu:set", {
     description: "Switch the emote set for the avatar",
     handler: async (_args, ctx) => {
       if (!ctx.hasUI) return;
@@ -205,7 +204,7 @@ export default function (pi: ExtensionAPI) {
       if (widgetActive && animator.currentState === "idle") animator.enterIdle();
       else if (widgetActive) renderer.showRandomFrame(animator.currentState, true);
 
-      log(`emote:switch: switched to "${setName}"`);
+      log(`bondhu:set: switched to "${setName}"`);
       ctx.ui.notify(`Emote set: ${setName}`, "info");
     },
   });
@@ -259,7 +258,6 @@ export default function (pi: ExtensionAPI) {
       pi,
       getCtxRef: () => ctxRef,
       getCurrentEmoteSet: () => currentEmoteSet,
-      getEmoteVisible: () => emoteVisible,
       getMinimal: () => minimalMode,
       tuiRef,
     }), { placement: "belowEditor" });
@@ -279,35 +277,42 @@ export default function (pi: ExtensionAPI) {
     ctxRef = null;
   });
 
-  // --- /emote:toggle: hide/show the animated avatar + separator (info stays) ---
+  // --- /bondhu:sleep: bondhu is gone — one-line status only ---
 
-  pi.registerCommand("emote:toggle", {
-    description: "Show or hide the emote avatar (info panel stays)",
+  pi.registerCommand("bondhu:sleep", {
+    description: "Put bondhu to sleep — show the one-line status only (persisted)",
     handler: async (_args, ctx) => {
-      if (!ctx.hasUI) return;
-      emoteVisible = !emoteVisible;
+      if (!ctx.hasUI || minimalMode) return;
+      minimalMode = true;
+      config.minimal = true;
       tuiRef.current?.requestRender?.();
-      log(`emote:toggle -> visible=${emoteVisible}`);
-      ctx.ui.notify(emoteVisible ? "Emote visible" : "Emote hidden — info panel stays", "info");
+      log(`bondhu:sleep`);
+      const saved = persistUserConfig({ minimal: true });
+      if (!saved) {
+        ctx.ui.notify("Could not save sleep setting", "error");
+        return;
+      }
+      ctx.ui.notify("Bondhu is sleeping — one-line status only (persisted)", "info");
     },
   });
 
-  // --- /minimal: one-line status (model | tokens | time·turns | progress) ---
+  // --- /bondhu:wake: bring bondhu back ---
 
-  pi.registerCommand("emote:minimal", {
-    description: "Toggle one-line minimal status (hides avatar and info panel)",
+  pi.registerCommand("bondhu:wake", {
+    description: "Wake bondhu — bring back the avatar and info panel (persisted)",
     handler: async (_args, ctx) => {
-      if (!ctx.hasUI) return;
-      minimalMode = !minimalMode;
-      config.minimal = minimalMode;
+      if (!ctx.hasUI || !minimalMode) return;
+      minimalMode = false;
+      config.minimal = false;
       tuiRef.current?.requestRender?.();
-      log(`emote:minimal -> ${minimalMode}`);
-      const saved = persistUserConfig({ minimal: minimalMode });
+      log(`bondhu:wake`);
+      const saved = persistUserConfig({ minimal: false });
       if (!saved) {
-        ctx.ui.notify("Could not save minimal setting", "error");
+        ctx.ui.notify("Could not save wake setting", "error");
         return;
       }
-      ctx.ui.notify(minimalMode ? "Minimal one-line status (persisted)" : "Full emote panel (persisted)", "info");
+      ctx.ui.notify("Bondhu is awake — full panel (persisted)", "info");
+      setTimeout(() => animator.transitionTo("hi"), 200);
     },
   });
 

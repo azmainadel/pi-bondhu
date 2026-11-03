@@ -12,8 +12,9 @@ pi install git:github.com/azmainadel/pi-emote
 
 | Command | Description |
 |---|---|
-| `/emote:switch` | Pick an emote set (persists to your user config) |
-| `/emote:toggle` | Show/hide the animated avatar (info panel stays) |
+| `/bondhu:set` | Pick an emote set (persists to your user config) |
+| `/bondhu:sleep` | Put bondhu to sleep — one-line status only (persists) |
+| `/bondhu:wake` | Wake bondhu — bring back the avatar and info panel (persists) |
 
 ## Emotes
 

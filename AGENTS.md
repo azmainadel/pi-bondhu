@@ -48,7 +48,7 @@ pi-emote uses layered configuration with deep merge. Higher-priority layers over
 
 - **enabled** — Toggle the widget on/off.
 - **debug** — Enable debug logging to `debug.log` in the extension directory.
-- **minimal** — Start with the one-line minimal status (toggled by `/emote:minimal`; the command persists its state to the user config layer).
+- **minimal** — Start with the one-line minimal status (toggled by `/bondhu:sleep` and `/bondhu:wake`; the commands persist their state to the user config layer).
 - **size** — Avatar width in terminal cells.
 - **readingSpeed** — Words per second used to pace talk animation duration.
 - **hideBelow** — Hide widget when terminal is narrower than this (columns).
