@@ -125,8 +125,17 @@ function buildProgressBar(usage: any): { bar: string; details: string } {
 
 // --- Info panel ---
 
-function buildInfoLines(width: number, infoWidth: number, ctxRef: any, pi: any, theme: any): string[] {
-  if (!ctxRef) return [];
+interface InfoPieces {
+  modelLine: string;
+  statsLine: string;
+  timeTurnsLine: string;
+  progressLine: string;
+  entries: any[];
+}
+
+/** Gather the shared status pieces used by both the full info panel and the minimal line. */
+function gatherInfoPieces(ctxRef: any, pi: any, theme: any): InfoPieces | null {
+  if (!ctxRef) return null;
 
   const model = ctxRef.model;
   const thinkingLevel = (ctxRef.thinkingLevel ?? pi.getThinkingLevel?.() ?? "default").toLowerCase();
@@ -152,17 +161,7 @@ function buildInfoLines(width: number, infoWidth: number, ctxRef: any, pi: any, 
   // Hide cost when the model has no pricing (e.g. subscription bridges report zero).
   if (totals.cost > 0) statsParts.push("💸", `$${totals.cost.toFixed(3)}`);
   const statsLine = statsParts.join(" ");
-  const cwd = ctxRef.sessionManager.getCwd?.() ?? process.cwd();
-  const branch = getGitBranch(cwd);
-  const sessionName = (ctxRef.sessionManager.getSessionName?.() ?? "")
-    .replace(/[\x00-\x1f\x7f]/g, " ").trim() || "π";
-  const gold = theme.getColorMode() === "truecolor"
-    ? "\x1b[38;2;181;158;101m"
-    : "\x1b[38;5;143m";
-  const dirText = compactDirectory(cwd);
 
-  // Layout: left column = session (gold) / model / dir / branch; right column =
-  // progress / tokens / time·turns. Right content is right-aligned per row.
   const startMs = cachedSessionStartMs(entries);
   const elapsed = formatElapsed(Math.max(0, Date.now() - startMs));
   const turns = countTurns(entries);
@@ -174,6 +173,57 @@ function buildInfoLines(width: number, infoWidth: number, ctxRef: any, pi: any, 
   const dot = theme.fg(dotToken, "●");
   const progressLine = `${dot} ${theme.fg("text", `▕${progress.bar}▏`)}${theme.fg("dim", ` ${progress.details}`)}`;
 
+  return { modelLine, statsLine, timeTurnsLine, progressLine, entries };
+}
+
+/** One-line minimal status: model | tokens | time·turns, progress right-aligned. */
+function buildMinimalLine(width: number, pieces: InfoPieces, theme: any): string {
+  const dim = (text: string) => theme.fg("dim", text);
+  const right = pieces.progressLine;
+  const rightW = visibleWidth(right);
+  const budget = Math.max(0, width - rightW - 2);
+
+  // Keep leading segments while they fit next to the progress bar.
+  const parts = [`🧠 ${pieces.modelLine}`, pieces.statsLine, pieces.timeTurnsLine];
+  const kept: string[] = [];
+  let used = 0;
+  for (const part of parts) {
+    const sepW = kept.length ? 5 : 0; // "  |  "
+    const partW = visibleWidth(part);
+    if (used + sepW + partW > budget) break;
+    used += sepW + partW;
+    kept.push(part);
+  }
+
+  let leftPlain = kept.join("  |  ");
+  if (!kept.length && budget > 2) {
+    // Nothing fit — show at least a truncated model line.
+    leftPlain = truncateToWidth(parts[0], budget, "…");
+  }
+  const pad = Math.max(1, width - visibleWidth(leftPlain) - rightW);
+  return `${dim(leftPlain)}${" ".repeat(pad)}${right}`;
+}
+
+function buildInfoLines(_width: number, infoWidth: number, ctxRef: any, pi: any, theme: any): string[] {
+  const pieces = gatherInfoPieces(ctxRef, pi, theme);
+  if (!pieces) return [];
+
+  const modelLine = pieces.modelLine;
+  const statsLine = pieces.statsLine;
+  const timeTurnsLine = pieces.timeTurnsLine;
+  const progressLine = pieces.progressLine;
+
+  const cwd = ctxRef.sessionManager.getCwd?.() ?? process.cwd();
+  const branch = getGitBranch(cwd);
+  const sessionName = (ctxRef.sessionManager.getSessionName?.() ?? "")
+    .replace(/[\x00-\x1f\x7f]/g, " ").trim() || "π";
+  const gold = theme.getColorMode() === "truecolor"
+    ? "\x1b[38;2;181;158;101m"
+    : "\x1b[38;5;143m";
+  const dirText = compactDirectory(cwd);
+
+  // Layout: left column = session (gold) / model / dir / branch; right column =
+  // progress / tokens / time·turns. Right content is right-aligned per row.
   const leftLines = [
     `${gold}${sessionName}\x1b[39m`,
     theme.fg("dim", `🧠 ${modelLine}`),
@@ -334,6 +384,7 @@ export interface WidgetDeps {
   getCtxRef: () => any;
   getCurrentEmoteSet: () => string;
   getEmoteVisible: () => boolean;
+  getMinimal: () => boolean;
   tuiRef: { current: any };
 }
 
@@ -363,6 +414,13 @@ export function createWidgetFactory(deps: WidgetDeps) {
 
         if (width < config.hideBelow) return [];
         if (isDialogActive(tui)) return [];
+
+        if (deps.getMinimal()) {
+          const pieces = gatherInfoPieces(deps.getCtxRef(), deps.pi, theme);
+          if (!pieces) return [];
+          log(`render: minimal one-line`);
+          return [buildMinimalLine(width, pieces, theme)];
+        }
 
         const frame = animator.getRenderedFrame();
         if (!frame) {

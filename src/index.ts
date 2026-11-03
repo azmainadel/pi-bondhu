@@ -83,6 +83,7 @@ export default function (pi: ExtensionAPI) {
   let ctxRef: any = null;
   let widgetActive = false;
   let emoteVisible = true;
+  let minimalMode = false;
   const tuiRef = { current: null as any };
   let lastResolved = resolveRenderer(config.terminals, userConfiguredTerminals);
   let renderer = createRendererFromResolved(lastResolved, config.size);
@@ -235,6 +236,7 @@ export default function (pi: ExtensionAPI) {
       getCtxRef: () => ctxRef,
       getCurrentEmoteSet: () => currentEmoteSet,
       getEmoteVisible: () => emoteVisible,
+      getMinimal: () => minimalMode,
       tuiRef,
     }), { placement: "aboveEditor" });
 
@@ -263,6 +265,19 @@ export default function (pi: ExtensionAPI) {
       tuiRef.current?.requestRender?.();
       log(`emote:toggle -> visible=${emoteVisible}`);
       ctx.ui.notify(emoteVisible ? "Emote visible" : "Emote hidden — info panel stays", "info");
+    },
+  });
+
+  // --- /minimal: one-line status (model | tokens | time·turns | progress) ---
+
+  pi.registerCommand("minimal", {
+    description: "Toggle one-line minimal status (hides avatar and info panel)",
+    handler: async (_args, ctx) => {
+      if (!ctx.hasUI) return;
+      minimalMode = !minimalMode;
+      tuiRef.current?.requestRender?.();
+      log(`emote:minimal -> ${minimalMode}`);
+      ctx.ui.notify(minimalMode ? "Minimal one-line status" : "Full emote panel", "info");
     },
   });
 
