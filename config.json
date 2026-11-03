@@ -1,6 +1,7 @@
 {
   "enabled": true,
   "debug": false,
+  "minimal": false,
   "size": 7,
   "readingSpeed": 4,
   "hideBelow": 40,

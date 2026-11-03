@@ -38,6 +38,7 @@ function loadJsonFile(path: string): any | null {
 const DEFAULTS: Config = {
   enabled: true,
   debug: false,
+  minimal: false,
   size: 8,
   readingSpeed: 4,
   hideBelow: 40,

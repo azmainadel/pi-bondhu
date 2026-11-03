@@ -3,6 +3,7 @@ export type EmoteState = "hi" | "idle" | "think" | "talk" | "read" | "write" | "
 export interface Config {
   enabled: boolean;
   debug: boolean;
+  minimal: boolean;
   size: number;
   readingSpeed: number;
   hideBelow: number;

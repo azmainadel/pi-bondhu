@@ -33,6 +33,22 @@ function hasImageFrames(setDir: string): boolean {
   return false;
 }
 
+/** Merge a patch into the user global config layer (~/.pi/agent/extensions/pi-emote/config.json). */
+function persistUserConfig(patch: Record<string, unknown>): boolean {
+  const userConfigPath = join(homedir(), ".pi", "agent", "extensions", "pi-emote", "config.json");
+  try {
+    let userConfig: any = {};
+    try { userConfig = JSON.parse(readFileSync(userConfigPath, "utf-8")); } catch { /* no user config yet */ }
+    Object.assign(userConfig, patch);
+    mkdirSync(dirname(userConfigPath), { recursive: true });
+    writeFileSync(userConfigPath, JSON.stringify(userConfig, null, 2) + "\n");
+    return true;
+  } catch (err) {
+    log(`persistUserConfig: failed: ${err}`);
+    return false;
+  }
+}
+
 function toolNameToState(toolName: string): EmoteState {
   switch (toolName) {
     case "read": return "read";
@@ -83,7 +99,7 @@ export default function (pi: ExtensionAPI) {
   let ctxRef: any = null;
   let widgetActive = false;
   let emoteVisible = true;
-  let minimalMode = false;
+  let minimalMode = config.minimal;
   const tuiRef = { current: null as any };
   let lastResolved = resolveRenderer(config.terminals, userConfiguredTerminals);
   let renderer = createRendererFromResolved(lastResolved, config.size);
@@ -204,6 +220,7 @@ export default function (pi: ExtensionAPI) {
     cwd = ctx.cwd;
     ({ config, userConfiguredTerminals } = loadLayeredConfig(extDir, cwd));
     setDebug(config.debug);
+    minimalMode = config.minimal;
     animator.updateConfig(config);
 
     // Re-create renderer in case terminal capabilities changed
@@ -275,9 +292,15 @@ export default function (pi: ExtensionAPI) {
     handler: async (_args, ctx) => {
       if (!ctx.hasUI) return;
       minimalMode = !minimalMode;
+      config.minimal = minimalMode;
       tuiRef.current?.requestRender?.();
       log(`emote:minimal -> ${minimalMode}`);
-      ctx.ui.notify(minimalMode ? "Minimal one-line status" : "Full emote panel", "info");
+      const saved = persistUserConfig({ minimal: minimalMode });
+      if (!saved) {
+        ctx.ui.notify("Could not save minimal setting", "error");
+        return;
+      }
+      ctx.ui.notify(minimalMode ? "Minimal one-line status (persisted)" : "Full emote panel (persisted)", "info");
     },
   });
 
