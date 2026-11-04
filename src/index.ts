@@ -17,7 +17,7 @@ import { TmuxITermRenderer } from "./render_tmux_iterm.js";
 import { AsciiRenderer } from "./render_ascii.js";
 import { Animator } from "./animator.js";
 import { createWidgetFactory } from "./widget.js";
-import { resolveRenderer } from "./terminal.js";
+import { resolveRenderer, probeKittySupport } from "./terminal.js";
 
 const IMAGE_STATES = ["hi", "idle", "think", "talk", "read", "write", "tool", "success", "failure", "compact"];
 
@@ -225,6 +225,26 @@ export default function (pi: ExtensionAPI) {
     // Re-create renderer in case terminal capabilities changed
     lastResolved = resolveRenderer(config.terminals, userConfiguredTerminals);
     renderer = createRendererFromResolved(lastResolved, config.size);
+
+    // Don't trust env claims about kitty support — ask the terminal directly.
+    // (Direct terminals only; through tmux the query can't be answered reliably.)
+    if (lastResolved.protocol === "kitty" && lastResolved.multiplexer === null) {
+      const kittyOk = await probeKittySupport(
+        (s) => process.stdout.write(s),
+        (h) => ctx.ui.onTerminalInput(h),
+      );
+      if (!kittyOk) {
+        log("kitty probe failed — falling back to ASCII");
+        renderer = new AsciiRenderer();
+        lastResolved = {
+          ...lastResolved,
+          protocol: "ascii",
+          warning: "[pi-bondhu] Kitty graphics not responding — using ASCII emotes.",
+          warningLevel: "warning",
+        };
+      }
+    }
+
     animator.setRenderer(renderer);
 
     if (lastResolved.warning) {

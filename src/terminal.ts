@@ -12,6 +12,50 @@ const MULTIPLEXERS = new Set(["tmux", "screen", "zellij"]);
  * Multiplexers are checked first — they set vars that leak through from
  * the outer terminal emulator.
  */
+/**
+ * Probe whether the terminal actually responds to the Kitty graphics protocol.
+ *
+ * Sends a kitty graphics query (action=q) and listens on raw terminal input
+ * for the response. Terminals that implement kitty reply within milliseconds;
+ * a timeout or an error reply (E= in the response) means images won't render
+ * and callers should fall back to ASCII.
+ */
+export function probeKittySupport(
+  write: (s: string) => void,
+  onInput: (handler: (data: string) => { consume?: boolean; data?: string } | undefined) => () => void,
+  timeoutMs = 300,
+): Promise<boolean> {
+  return new Promise((resolve) => {
+    let settled = false;
+    let buffer = "";
+    let unsubscribe: () => void = () => {};
+
+    const finish = (ok: boolean) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      unsubscribe();
+      resolve(ok);
+    };
+
+    const handler = (data: string) => {
+      buffer += data;
+      const start = buffer.indexOf("\x1b_G");
+      if (start === -1) return undefined;
+      const response = buffer.slice(start);
+      if (!response.startsWith("\x1b_Gi=31;")) return undefined;
+      // OK replies carry metadata (I=...); error replies carry E=...
+      const ok = !response.slice(8, 96).includes("E=");
+      finish(ok);
+      return { consume: true };
+    };
+
+    unsubscribe = onInput(handler);
+    const timer = setTimeout(() => finish(false), timeoutMs);
+    write("\x1b_Gi=31,a=q;\x1b\\");
+  });
+}
+
 export function detectTerminalName(): string {
   const termProgram = (process.env.TERM_PROGRAM ?? "").toLowerCase();
   const term = (process.env.TERM ?? "").toLowerCase();
