@@ -39,5 +39,7 @@ jobs:
       - name: Test
         run: npm test
 
-      - name: Publish
-        run: npm publish
+      # Staged flow — a maintainer must approve with 2FA before it goes live:
+      # `npm stage approve pi-bondhu` (or npmjs.com → package → Staged)
+      - name: Stage for review
+        run: npm stage publish
