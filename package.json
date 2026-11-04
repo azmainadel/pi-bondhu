@@ -1,6 +1,6 @@
 {
   "name": "pi-bondhu",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Animated pixel-art emote widget for pi TUI",
   "author": "Adel",
   "license": "MIT",
@@ -28,7 +28,9 @@
     "LICENSE"
   ],
   "pi": {
-    "extensions": ["./src/index.ts"]
+    "extensions": [
+      "./src/index.ts"
+    ]
   },
   "peerDependencies": {
     "@earendil-works/pi-coding-agent": "*",
