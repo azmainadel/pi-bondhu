@@ -1,0 +1,43 @@
+name: Publish to npm
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  id-token: write # OIDC — npm trusted publishing needs no stored token
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org/
+
+      # Trusted publishing requires npm >= 11.5.1
+      - name: Update npm
+        run: npm install -g npm@latest
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Verify tag matches package version
+        run: |
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          TAG_VERSION=${GITHUB_REF_NAME#v}
+          if [ "$PKG_VERSION" != "$TAG_VERSION" ]; then
+            echo "::error::Tag v$TAG_VERSION != package.json v$PKG_VERSION"
+            exit 1
+          fi
+
+      - name: Test
+        run: npm test
+
+      - name: Publish
+        run: npm publish
